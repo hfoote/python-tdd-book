@@ -1,0 +1,5 @@
+db.sqlite3
+virtualenv
+.DS_Store
+__pycache__
+*.pyc
