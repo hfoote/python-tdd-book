@@ -1,3 +1,5 @@
+# test suite as written in the book with unittest
+
 from selenium import webdriver
 import unittest
 
