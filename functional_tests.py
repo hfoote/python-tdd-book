@@ -37,18 +37,26 @@ def test_can_start_a_list_and_retrieve_it_later(browser):
 
 	table = browser.find_element(By.ID, 'id_list_table')
 	rows = table.find_elements(By.TAG_NAME, 'tr')
-	assert any(row.text == '1. Buy replacement drum heads' for row in rows), "New to-do item does not appear in table"
+	assert '1. Buy replacement drum heads' in [row.text for row in rows]
 
 	# There is still a text box inviting them to add another item. They enter 
-	# "replace old drumheads"
-	pytest.fail('Finish the test!')
+	# "Replace old drum heads"
+	inputbox = browser.find_element(By.ID, 'id_new_item')
+	inputbox.send_keys('Replace old drum heads')
+	inputbox.send_keys(Keys.ENTER)
+	time.sleep(1)
 
 	# The page updates again, and now shows both items on the user's list, along
 	# with another box to add more items
+	table = browser.find_element(By.ID, 'id_list_table')
+	rows = table.find_elements(By.TAG_NAME, 'tr')
+	assert '1. Buy replacement drum heads' in [row.text for row in rows]
+	assert '2. Replace old drum heads' in [row.text for row in rows]
 
 	# The user wonders whether the site will remember their list. They see some
 	# text explaining that the site has genetrated a unique url for them which will 
 	# store their list. 
+	pytest.fail('Finish the test!')
 
 	# The user opens their unique URL and sees their list
 
