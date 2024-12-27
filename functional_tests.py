@@ -39,7 +39,7 @@ def test_can_start_a_list_and_retrieve_it_later(browser):
 	# now listed as the first to-do list item
 	inputbox.send_keys(Keys.ENTER)
 	time.sleep(1)
-	check_for_row_in_list_table(browser, '1. Buy replacement drum heads')
+	check_for_row_in_list_table(browser, '1: Buy replacement drum heads')
 
 	# There is still a text box inviting them to add another item. They enter 
 	# "Replace old drum heads"
@@ -50,8 +50,8 @@ def test_can_start_a_list_and_retrieve_it_later(browser):
 
 	# The page updates again, and now shows both items on the user's list, along
 	# with another box to add more items
-	check_for_row_in_list_table(browser, '1. Buy replacement drum heads')
-	check_for_row_in_list_table(browser, '2. Replace old drum heads')
+	check_for_row_in_list_table(browser, '1: Buy replacement drum heads')
+	check_for_row_in_list_table(browser, '2: Replace old drum heads')
 
 	# The user wonders whether the site will remember their list. They see some
 	# text explaining that the site has genetrated a unique url for them which will 
