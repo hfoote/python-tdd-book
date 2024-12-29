@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 import time
 import pytest
+import re
 
 MAX_WAIT = 10 # max time to wait for a row to populate in s
 
@@ -63,11 +64,47 @@ def test_can_start_a_list_and_retrieve_it_later(browser, live_server):
 	wait_for_row_in_list_table(browser, '1: Buy replacement drum heads')
 	wait_for_row_in_list_table(browser, '2: Replace old drum heads')
 
-	# The user wonders whether the site will remember their list. They see some
-	# text explaining that the site has genetrated a unique url for them which will 
-	# store their list. 
-	pytest.fail('Finish the test!')
-
-	# The user opens their unique URL and sees their list
-
 	# Satisfied, the user goes back to bed. 
+
+def test_multiple_users_can_start_lists_at_different_urls(browser, live_server):
+	# A user starts a new to-do list
+	browser.get(live_server.url)
+	inputbox = browser.find_element(By.ID, 'id_new_item')
+	inputbox.send_keys('Buy replacement drum heads')
+	inputbox.send_keys(Keys.ENTER)
+	wait_for_row_in_list_table(browser, '1: Buy replacement drum heads')
+
+	# The user notices their list has a unique URL
+	user1_list_url = browser.current_url
+	assert re.search('/lists/.+', user1_list_url), f"{user1_list_url} does not match '/lists/.+'"
+
+	# Now a new user visits the site. 
+
+	## We use a new browser session to make sure no info from the first user 
+	## (e.g. cookies) is coming through
+	browser.quit()
+	browser = webdriver.Firefox()
+
+	# The second user visits the homepage. There is no sign of the first user's list
+	browser.get(live_server.url)
+	page_text = browser.find_element(By.TAG_NAME, 'body').text
+	assert 'Buy replacement drum heads' not in page_text
+	assert 'Replace old' not in page_text
+
+	# The second user starts a new list by entering an item.
+	inputbox = browser.find_element(By.ID, 'id_new_item')
+	inputbox.send_keys('Buy milk')
+	inputbox.send_keys(Keys.ENTER)
+	wait_for_row_in_list_table(browser, '1: Buy milk')
+
+	# The second user gets their own unique URL
+	user2_list_url = browser.current_url
+	assert re.search('/lists/.+', user2_list_url), f"{user2_list_url} does not match '/lists/.+'"
+	assert user1_list_url != user2_list_url
+
+	# Again, there is no trace of the first user's list
+	page_text = browser.find_element(By.TAG_NAME, 'body').text
+	assert 'Buy replacement drum heads' not in page_text
+	assert 'Buy milk' in page_text
+
+	# Satisfied, both users go back to sleep. 
