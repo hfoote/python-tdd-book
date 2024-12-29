@@ -66,8 +66,11 @@ def test_can_start_a_list_and_retrieve_it_later(browser, live_server):
 
 	# Satisfied, the user goes back to bed. 
 
-def test_multiple_users_can_start_lists_at_different_urls(browser, live_server):
+# using "request" fixture here instead of "browser"
+# so we can request a new browser session halfway through
+def test_multiple_users_can_start_lists_at_different_urls(request, live_server):
 	# A user starts a new to-do list
+	browser = request.getfixturevalue('browser')
 	browser.get(live_server.url)
 	inputbox = browser.find_element(By.ID, 'id_new_item')
 	inputbox.send_keys('Buy replacement drum heads')
@@ -76,14 +79,14 @@ def test_multiple_users_can_start_lists_at_different_urls(browser, live_server):
 
 	# The user notices their list has a unique URL
 	user1_list_url = browser.current_url
-	assert re.search('/lists/.+', user1_list_url), f"{user1_list_url} does not match '/lists/.+'"
+	url_pattern = '/lists/.+'
+	assert re.search(url_pattern, user1_list_url), f"{user1_list_url} does not match {url_pattern}"
 
 	# Now a new user visits the site. 
 
 	## We use a new browser session to make sure no info from the first user 
 	## (e.g. cookies) is coming through
-	browser.quit()
-	browser = webdriver.Firefox()
+	browser = request.getfixturevalue('browser')
 
 	# The second user visits the homepage. There is no sign of the first user's list
 	browser.get(live_server.url)
@@ -99,7 +102,7 @@ def test_multiple_users_can_start_lists_at_different_urls(browser, live_server):
 
 	# The second user gets their own unique URL
 	user2_list_url = browser.current_url
-	assert re.search('/lists/.+', user2_list_url), f"{user2_list_url} does not match '/lists/.+'"
+	assert re.search(url_pattern, user2_list_url), f"{user2_list_url} does not match {url_pattern}"
 	assert user1_list_url != user2_list_url
 
 	# Again, there is no trace of the first user's list
