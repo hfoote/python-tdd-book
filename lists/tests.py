@@ -7,7 +7,7 @@ from lists.views import home_page
 from lists.models import Item 
 
 @pytest.mark.django_db
-def test_uses_home_template(client):
+def test_uses_home_template(client): # NOTE: client fixture automatically gets the current client
 	response = client.get('/')
 	assertTemplateUsed(response, 'home.html')
 

@@ -3,8 +3,11 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import WebDriverException
 import time
 import pytest
+
+MAX_WAIT = 10 # max time to wait for a row to populate in s
 
 # setup / teardown function for the browser
 @pytest.fixture
@@ -13,10 +16,18 @@ def browser():
 	yield driver
 	driver.quit()
 
-def check_for_row_in_list_table(browser, row_text):
-	table = browser.find_element(By.ID, 'id_list_table')
-	rows = table.find_elements(By.TAG_NAME, 'tr')
-	assert row_text in [row.text for row in rows]
+def wait_for_row_in_list_table(browser, row_text):
+	start_time = time.time()
+	while True:
+		try:
+			table = browser.find_element(By.ID, 'id_list_table')
+			rows = table.find_elements(By.TAG_NAME, 'tr')
+			assert row_text in [row.text for row in rows]
+			return
+		except (AssertionError, WebDriverException) as e:
+			if time.time() - start_time > MAX_WAIT:
+				raise e
+			time.sleep(0.5)
 
 # NOTE : live_server fixture runs a separate test server, then cleans up (equivalent of django.test.LiveServerTestCase)
 def test_can_start_a_list_and_retrieve_it_later(browser, live_server):
@@ -39,20 +50,18 @@ def test_can_start_a_list_and_retrieve_it_later(browser, live_server):
 	# When they hit enter, the page updates and "1. Buy replacement drum heads" is 
 	# now listed as the first to-do list item
 	inputbox.send_keys(Keys.ENTER)
-	time.sleep(1)
-	check_for_row_in_list_table(browser, '1: Buy replacement drum heads')
+	wait_for_row_in_list_table(browser, '1: Buy replacement drum heads')
 
 	# There is still a text box inviting them to add another item. They enter 
 	# "Replace old drum heads"
 	inputbox = browser.find_element(By.ID, 'id_new_item')
 	inputbox.send_keys('Replace old drum heads')
 	inputbox.send_keys(Keys.ENTER)
-	time.sleep(1)
 
 	# The page updates again, and now shows both items on the user's list, along
 	# with another box to add more items
-	check_for_row_in_list_table(browser, '1: Buy replacement drum heads')
-	check_for_row_in_list_table(browser, '2: Replace old drum heads')
+	wait_for_row_in_list_table(browser, '1: Buy replacement drum heads')
+	wait_for_row_in_list_table(browser, '2: Replace old drum heads')
 
 	# The user wonders whether the site will remember their list. They see some
 	# text explaining that the site has genetrated a unique url for them which will 
