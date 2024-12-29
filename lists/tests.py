@@ -1,5 +1,5 @@
 import pytest
-from pytest_django.asserts import assertTemplateUsed, assertContains
+from pytest_django.asserts import assertTemplateUsed, assertContains, assertRedirects
 from django.urls import resolve
 from django.http import HttpRequest
 
@@ -12,9 +12,10 @@ def test_uses_home_template(client): # NOTE: client fixture automatically gets t
 	response = client.get('/')
 	assertTemplateUsed(response, 'home.html')
 
+## New list tests
 @pytest.mark.django_db
 def test_can_save_a_POST_request(client):
-	response = client.post('/', data={'item_text': 'A new list item'})
+	response = client.post('/lists/new', data={'item_text': 'A new list item'})
 
 	assert Item.objects.count() == 1
 	new_item = Item.objects.first()
@@ -22,14 +23,8 @@ def test_can_save_a_POST_request(client):
 
 @pytest.mark.django_db
 def test_redirects_after_POST(client):
-	response = client.post('/', data={'item_text': 'A new list item'})
-	assert response.status_code == 302
-	assert response['location'] == '/lists/the-only-list-in-the-world/'
-
-@pytest.mark.django_db
-def test_only_saves_items_when_necessary(client):
-	client.get('/')
-	assert Item.objects.count() == 0
+	response = client.post('/lists/new', data={'item_text': 'A new list item'})
+	assertRedirects(response, '/lists/the-only-list-in-the-world/')
 
 ## List view page tests
 @pytest.mark.django_db
