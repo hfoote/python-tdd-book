@@ -18,10 +18,11 @@ def check_for_row_in_list_table(browser, row_text):
 	rows = table.find_elements(By.TAG_NAME, 'tr')
 	assert row_text in [row.text for row in rows]
 
-def test_can_start_a_list_and_retrieve_it_later(browser):
+# NOTE : live_server fixture runs a separate test server, then cleans up (equivalent of django.test.LiveServerTestCase)
+def test_can_start_a_list_and_retrieve_it_later(browser, live_server):
 
 	# A user has heard about a new to-do app. They open the homepage
-	browser.get("http://localhost:8000")
+	browser.get(live_server.url)
 
 	# and see that the page mentions to-do lists in its title
 	assert "To-Do" in browser.title
