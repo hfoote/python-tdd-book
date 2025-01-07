@@ -4,7 +4,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 
 from lists.views import home_page
-from lists.models import Item 
+from lists.models import Item, List
 
 ## Home page tests
 @pytest.mark.django_db
@@ -34,24 +34,33 @@ def test_uses_list_template(client):
 
 @pytest.mark.django_db
 def test_displays_all_items(client):
-	Item.objects.create(text='itemey 1')
-	Item.objects.create(text='itemey 2')
+	list_ = List.objects.create()
+	Item.objects.create(text='itemey 1', list=list_)
+	Item.objects.create(text='itemey 2', list=list_)
 
 	response = client.get('/lists/the-only-list-in-the-world/')
 
 	assertContains(response, 'itemey 1')
-	assertContains(response, 'itemey 2')
+	assertContains(response, 'itemey 2')	
 
 ## Database tests
 @pytest.mark.django_db
 def test_saving_and_retrieving_items():
+	list_ = List()
+	list_.save()
+
 	first_item = Item()
 	first_item.text = 'The first (ever) list item'
+	first_item.list = list_
 	first_item.save()
 
 	second_item = Item()
 	second_item.text = 'Item the second'
+	second_item.list = list_
 	second_item.save()
+
+	saved_list = List.objects.first()
+	assert saved_list == list_
 
 	saved_items = Item.objects.all()
 	assert saved_items.count() == 2
@@ -59,4 +68,6 @@ def test_saving_and_retrieving_items():
 	first_saved_item = saved_items[0]
 	second_saved_item = saved_items[1]
 	assert first_saved_item.text == 'The first (ever) list item'
+	assert first_saved_item.list == list_
 	assert second_saved_item.text == 'Item the second'
+	assert second_saved_item.list == list_
