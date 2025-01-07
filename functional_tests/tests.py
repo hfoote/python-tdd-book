@@ -31,7 +31,7 @@ def wait_for_row_in_list_table(browser, row_text):
 			time.sleep(0.5)
 
 # NOTE : live_server fixture runs a separate test server, then cleans up (equivalent of django.test.LiveServerTestCase)
-def test_can_start_a_list_and_retrieve_it_later(browser, live_server):
+def test_can_start_a_list_for_one_user(browser, live_server):
 
 	# A user has heard about a new to-do app. They open the homepage
 	browser.get(live_server.url)
