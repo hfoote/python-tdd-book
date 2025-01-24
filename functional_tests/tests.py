@@ -68,6 +68,7 @@ def test_can_start_a_list_for_one_user(browser, live_server):
 
 # using "request" fixture here instead of "browser"
 # so we can request a new browser session halfway through
+## TODO: use two fixtures instead of calling the same one twice - there should be some kind of way to "reuse"
 def test_multiple_users_can_start_lists_at_different_urls(request, live_server):
 	# A user starts a new to-do list
 	browser = request.getfixturevalue('browser')
@@ -111,3 +112,20 @@ def test_multiple_users_can_start_lists_at_different_urls(request, live_server):
 	assert 'Buy milk' in page_text
 
 	# Satisfied, both users go back to sleep. 
+
+def test_layout_and_styling(browser, live_server):
+	# A user goes to the home page
+	browser.get(live_server.url)
+	browser.set_window_size(1024, 768)
+
+	# they notice the input box is nicely centered
+	inputbox = browser.find_element(By.ID, 'id_new_item')
+	assert abs(inputbox.location['x'] + inputbox.size['width']/2 - 512) <= 10
+
+	# they start a new list and notice the input box 
+	# is centered in the list view page too
+	inputbox.send_keys('testing')
+	inputbox.send_keys(Keys.ENTER)
+	wait_for_row_in_list_table(browser, '1: testing')
+	inputbox = browser.find_element(By.ID, 'id_new_item')
+	assert abs(inputbox.location['x'] + inputbox.size['width']/2 - 512) <= 10
