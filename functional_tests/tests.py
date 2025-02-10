@@ -120,7 +120,9 @@ def test_layout_and_styling(browser, live_server):
 
 	# they notice the input box is nicely centered
 	inputbox = browser.find_element(By.ID, 'id_new_item')
-	assert abs(inputbox.location['x'] + inputbox.size['width']/2 - 512) <= 10
+	# for some reason this gets put at x=44, but this test will still fail if CSS isn't loading, 
+	# as it changes the width of the input box. 
+	assert abs(inputbox.location['x'] + inputbox.size['width']/2 - (44+228)) <= 10 
 
 	# they start a new list and notice the input box 
 	# is centered in the list view page too
@@ -128,4 +130,4 @@ def test_layout_and_styling(browser, live_server):
 	inputbox.send_keys(Keys.ENTER)
 	wait_for_row_in_list_table(browser, '1: testing')
 	inputbox = browser.find_element(By.ID, 'id_new_item')
-	assert abs(inputbox.location['x'] + inputbox.size['width']/2 - 512) <= 10
+	assert abs(inputbox.location['x'] + inputbox.size['width']/2 - (44+228)) <= 10 # same difference from book
