@@ -7,15 +7,26 @@ from selenium.common.exceptions import WebDriverException
 import time
 import pytest
 import re
+import os
 
 MAX_WAIT = 10 # max time to wait for a row to populate in s
 
 # setup / teardown function for the browser
 @pytest.fixture
-def browser():
+def browser(live_server):
 	driver = webdriver.Firefox()
 	yield driver
 	driver.quit()
+
+# fixture for the server url - returns either the specified staging sever
+# or a pytest-django live_server url
+@pytest.fixture
+def home_url(live_server):
+	staging_server = os.environ.get('STAGING_SERVER')
+	if staging_server:
+		yield 'http://' + staging_server
+	else:
+		yield live_server.url
 
 def wait_for_row_in_list_table(browser, row_text):
 	start_time = time.time()
@@ -31,10 +42,10 @@ def wait_for_row_in_list_table(browser, row_text):
 			time.sleep(0.5)
 
 # NOTE : live_server fixture runs a separate test server, then cleans up (equivalent of django.test.LiveServerTestCase)
-def test_can_start_a_list_for_one_user(browser, live_server):
+def test_can_start_a_list_for_one_user(browser, home_url):
 
 	# A user has heard about a new to-do app. They open the homepage
-	browser.get(live_server.url)
+	browser.get(home_url)
 
 	# and see that the page mentions to-do lists in its title
 	assert "To-Do" in browser.title
@@ -69,10 +80,10 @@ def test_can_start_a_list_for_one_user(browser, live_server):
 # using "request" fixture here instead of "browser"
 # so we can request a new browser session halfway through
 ## TODO: use two fixtures instead of calling the same one twice - there should be some kind of way to "reuse"
-def test_multiple_users_can_start_lists_at_different_urls(request, live_server):
+def test_multiple_users_can_start_lists_at_different_urls(request, home_url):
 	# A user starts a new to-do list
 	browser = request.getfixturevalue('browser')
-	browser.get(live_server.url)
+	browser.get(home_url)
 	inputbox = browser.find_element(By.ID, 'id_new_item')
 	inputbox.send_keys('Buy replacement drum heads')
 	inputbox.send_keys(Keys.ENTER)
@@ -90,7 +101,7 @@ def test_multiple_users_can_start_lists_at_different_urls(request, live_server):
 	browser = request.getfixturevalue('browser')
 
 	# The second user visits the homepage. There is no sign of the first user's list
-	browser.get(live_server.url)
+	browser.get(home_url)
 	page_text = browser.find_element(By.TAG_NAME, 'body').text
 	assert 'Buy replacement drum heads' not in page_text
 	assert 'Replace old' not in page_text
@@ -113,9 +124,9 @@ def test_multiple_users_can_start_lists_at_different_urls(request, live_server):
 
 	# Satisfied, both users go back to sleep. 
 
-def test_layout_and_styling(browser, live_server):
+def test_layout_and_styling(browser, home_url):
 	# A user goes to the home page
-	browser.get(live_server.url)
+	browser.get(home_url)
 	browser.set_window_size(1024, 768)
 
 	# they notice the input box is nicely centered
