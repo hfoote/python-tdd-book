@@ -42,6 +42,7 @@ def wait_for_row_in_list_table(browser, row_text):
 			time.sleep(0.5)
 
 # NOTE : live_server fixture runs a separate test server, then cleans up (equivalent of django.test.LiveServerTestCase)
+@pytest.mark.django_db
 def test_can_start_a_list_for_one_user(browser, home_url):
 
 	# A user has heard about a new to-do app. They open the homepage
@@ -80,6 +81,7 @@ def test_can_start_a_list_for_one_user(browser, home_url):
 # using "request" fixture here instead of "browser"
 # so we can request a new browser session halfway through
 ## TODO: use two fixtures instead of calling the same one twice - there should be some kind of way to "reuse"
+@pytest.mark.django_db
 def test_multiple_users_can_start_lists_at_different_urls(request, home_url):
 	# A user starts a new to-do list
 	browser = request.getfixturevalue('browser')
@@ -124,6 +126,7 @@ def test_multiple_users_can_start_lists_at_different_urls(request, home_url):
 
 	# Satisfied, both users go back to sleep. 
 
+@pytest.mark.django_db
 def test_layout_and_styling(browser, home_url):
 	# A user goes to the home page
 	browser.get(home_url)
