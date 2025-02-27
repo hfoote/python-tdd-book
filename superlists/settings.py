@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = ['http://superlists-staging.big-foote.com', 'http://superlists.big-foote.com']
 
 # Application definition
 
