@@ -4,4 +4,4 @@ virtualenv
 __pycache__
 *.pyc
 /static
-pi_server*
+pi_server*.env
