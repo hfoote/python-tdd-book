@@ -1,6 +1,7 @@
 import pytest
 from pytest_django.asserts import assertTemplateUsed, assertContains, assertRedirects, assertNotContains
 from lists.models import Item, List
+from django.utils.html import escape
 
 @pytest.mark.django_db
 @pytest.mark.usefixtures('client')
@@ -25,6 +26,18 @@ class NewListTest:
 		response = client.post('/lists/new', data={'item_text': 'A new list item'})
 		new_list = List.objects.first()
 		assertRedirects(response, f'/lists/{new_list.id}/')
+
+	def test_validation_errors_are_sent_back_to_home_page_template(self, client):
+		response = client.post('/lists/new', data={'item_text': ''})
+		assert response.status_code == 200
+		assertTemplateUsed(response, 'home.html')
+		expected_error = escape("You can't have an empty list item")
+		assertContains(response, expected_error)
+
+	def test_invalid_list_items_arent_saved(self, client):
+		client.post('/lists/new', data={'item_text': ''})
+		assert List.objects.count() == 0
+		assert Item.objects.count() == 0
 
 @pytest.mark.django_db
 @pytest.mark.usefixtures('client')

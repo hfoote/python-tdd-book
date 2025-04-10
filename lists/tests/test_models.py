@@ -1,6 +1,6 @@
 import pytest
 from lists.models import Item, List
-
+from django.core.exceptions import ValidationError
 
 @pytest.mark.django_db
 class ListAndItemModelTest:
@@ -32,4 +32,9 @@ class ListAndItemModelTest:
 		assert second_saved_item.text == 'Item the second'
 		assert second_saved_item.list == list_
 
-
+	def test_cannot_save_empty_list_items(self):
+		list_ = List.objects.create()
+		item = Item(list=list_, text='')
+		with pytest.raises(ValidationError):
+			item.save()
+			item.full_clean()

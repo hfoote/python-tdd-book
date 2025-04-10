@@ -16,8 +16,7 @@ class ItenValidationTest(FunctionalTest):
 		# The home page refreshes, and there is an error message saying
 		# that the list cannot be blank. 
 		def check_empty_error():
-			assert self.browser.find_element(By.CSS_SELECTOR, ".has_error").text == \
-			"You can't have an empty list item"
+			assert self.browser.find_element(By.CSS_SELECTOR, ".has_error").text == "You can't have an empty list item"
 		self.wait_for(check_empty_error)
 
 		# She tries again with some text for this item, which now works. 
