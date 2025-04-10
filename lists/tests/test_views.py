@@ -69,16 +69,12 @@ class ListViewTest:
 		response = client.get(f'/lists/{correct_list.id}/')
 		assert response.context['list'] == correct_list
 
-@pytest.mark.django_db
-@pytest.mark.usefixtures('client')
-class NewItemTest:
-
 	def test_can_save_a_POST_request_to_an_existing_list(self, client):
 		other_list = List.objects.create()
 		correct_list = List.objects.create()
 		
 		client.post(
-			f'/lists/{correct_list.id}/add_item',
+			f'/lists/{correct_list.id}/',
 			data = {'item_text': 'A new item for an existing list'}
 		)
 
@@ -87,12 +83,12 @@ class NewItemTest:
 		assert new_item.text == 'A new item for an existing list'
 		assert new_item.list == correct_list
 
-	def test_redirects_to_list_view(self, client):
+	def test_POST_redirects_to_list_view(self, client):
 		other_list = List.objects.create()
 		correct_list = List.objects.create()
 
 		response = client.post(
-			f'/lists/{correct_list.id}/add_item',
+			f'/lists/{correct_list.id}/',
 			data = {'item_text': 'A new item for an existing list'}
 		)
 
