@@ -9,9 +9,8 @@ MAX_WAIT = 10 # max time to wait for a row to populate in sec
 
 class FunctionalTest: # base functional test class that will be inherited by others
 	# always fetch the browser and home url fixtures, and place them into attributes
-	@pytest.fixture(autouse=True)
+	@pytest.fixture(autouse=True) # TODO: try to get rid of this now that you have conftest set up
 	def _setup(self, get_browser, get_home_url):
-		print("getting browser")
 		self.browser = get_browser
 		self.home_url = get_home_url
 

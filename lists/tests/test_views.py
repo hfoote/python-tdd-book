@@ -4,7 +4,6 @@ from lists.models import Item, List
 from django.utils.html import escape
 
 @pytest.mark.django_db
-@pytest.mark.usefixtures('client')
 class HomePageTest:
 
 	def test_uses_home_template(self, client): # NOTE: client fixture automatically gets the current client
@@ -12,7 +11,6 @@ class HomePageTest:
 		assertTemplateUsed(response, 'home.html')
 
 @pytest.mark.django_db
-@pytest.mark.usefixtures('client')
 class NewListTest:
 
 	def test_can_save_a_POST_request(self, client):
@@ -40,7 +38,6 @@ class NewListTest:
 		assert Item.objects.count() == 0
 
 @pytest.mark.django_db
-@pytest.mark.usefixtures('client')
 class ListViewTest:
 
 	def test_uses_list_template(self, client):
@@ -93,3 +90,14 @@ class ListViewTest:
 		)
 
 		assertRedirects(response, f'/lists/{correct_list.id}/')
+
+	def test_validation_errors_end_up_on_lists_page(self, client):
+		list_ = List.objects.create()
+		response = client.post(
+			f'/lists/{list_.id}/',
+			data = {'item_text': ''}
+		)
+		assert response.status_code == 200 
+		assertTemplateUsed(response, 'list.html')
+		expected_error = escape("You can't have an empty list item")
+		assertContains(response, expected_error)
