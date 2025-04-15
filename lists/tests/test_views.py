@@ -1,6 +1,7 @@
 import pytest
 from pytest_django.asserts import assertTemplateUsed, assertContains, assertRedirects, assertNotContains
 from lists.models import Item, List
+from lists.forms import ItemForm
 from django.utils.html import escape
 
 @pytest.mark.django_db
@@ -9,6 +10,10 @@ class HomePageTest:
 	def test_uses_home_template(self, client): # NOTE: client fixture automatically gets the current client
 		response = client.get('/')
 		assertTemplateUsed(response, 'home.html')
+
+	def test_home_page_uses_item_form(self, client):
+		response = client.get('/')
+		assert isinstance(response.context['form'], ItemForm)
 
 @pytest.mark.django_db
 class NewListTest:
