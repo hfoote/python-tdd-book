@@ -6,12 +6,12 @@ from selenium.webdriver.common.by import By
 import pytest
 
 @pytest.mark.django_db
-class ItenValidationTest(FunctionalTest):
+class ItemValidationTest(FunctionalTest):
 	def test_cannot_add_empty_list_items(self):
 		# Edith goes to the home page and accidentally tries to submit 
 		# an empty list item. She hits enter on the empty input box. 
 		self.browser.get(self.home_url)
-		self.browser.find_element(By.ID, "id_new_item").send_keys(Keys.ENTER)
+		self.get_item_input_box().send_keys(Keys.ENTER)
 
 		# The home page refreshes, and there is an error message saying
 		# that the list cannot be blank. 
@@ -20,18 +20,18 @@ class ItenValidationTest(FunctionalTest):
 		self.wait_for(check_empty_error)
 
 		# She tries again with some text for this item, which now works. 
-		self.browser.find_element(By.ID, "id_new_item").send_keys("Buy milk")
-		self.browser.find_element(By.ID, "id_new_item").send_keys(Keys.ENTER)
+		self.get_item_input_box().send_keys("Buy milk")
+		self.get_item_input_box().send_keys(Keys.ENTER)
 		self.wait_for_row_in_list_table("1: Buy milk")
 
 		# For some reason, she decides to submit a second empty list item. 
-		self.browser.find_element(By.ID, "id_new_item").send_keys(Keys.ENTER)
+		self.get_item_input_box().send_keys(Keys.ENTER)
 
 		# She recieves a similar warning on the list page. 
 		self.wait_for(check_empty_error)
 
 		# And she can correct it by filling some text in. 
-		self.browser.find_element(By.ID, "id_new_item").send_keys("Make tea")
-		self.browser.find_element(By.ID, "id_new_item").send_keys(Keys.ENTER)
+		self.get_item_input_box().send_keys("Make tea")
+		self.get_item_input_box().send_keys(Keys.ENTER)
 		self.wait_for_row_in_list_table("1: Buy milk")
 		self.wait_for_row_in_list_table("2: Make tea")

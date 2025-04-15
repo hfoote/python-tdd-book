@@ -36,3 +36,6 @@ class FunctionalTest: # base functional test class that will be inherited by oth
 				if time.time() - start_time > MAX_WAIT:
 					raise e
 				time.sleep(0.5)
+
+	def get_item_input_box(self):
+		return self.browser.find_element(By.ID, 'id_text')

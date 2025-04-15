@@ -20,7 +20,7 @@ class NewVisitorTest(FunctionalTest):
 		assert "To-Do" in header_text
 
 		# The user is invited to enter a to-do list item
-		inputbox = self.browser.find_element(By.ID, 'id_new_item')
+		inputbox = self.get_item_input_box()
 		assert inputbox.get_attribute('placeholder') == 'Enter a to-do item'
 
 		# They enter "Buy replacement drum heads" into a textbox
@@ -33,7 +33,7 @@ class NewVisitorTest(FunctionalTest):
 
 		# There is still a text box inviting them to add another item. They enter 
 		# "Replace old drum heads"
-		inputbox = self.browser.find_element(By.ID, 'id_new_item')
+		inputbox = self.get_item_input_box()
 		inputbox.send_keys('Replace old drum heads')
 		inputbox.send_keys(Keys.ENTER)
 
@@ -51,7 +51,7 @@ class NewVisitorTest(FunctionalTest):
 		# A user starts a new to-do list
 		browser = request.getfixturevalue('get_browser')
 		browser.get(self.home_url)
-		inputbox = browser.find_element(By.ID, 'id_new_item')
+		inputbox = self.get_item_input_box()
 		inputbox.send_keys('Buy replacement drum heads')
 		inputbox.send_keys(Keys.ENTER)
 		self.wait_for_row_in_list_table('1: Buy replacement drum heads')
@@ -74,7 +74,7 @@ class NewVisitorTest(FunctionalTest):
 		assert 'Replace old' not in page_text
 
 		# The second user starts a new list by entering an item.
-		inputbox = browser.find_element(By.ID, 'id_new_item')
+		inputbox = self.get_item_input_box()
 		inputbox.send_keys('Buy milk')
 		inputbox.send_keys(Keys.ENTER)
 		self.wait_for_row_in_list_table('1: Buy milk')

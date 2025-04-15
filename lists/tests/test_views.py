@@ -19,26 +19,26 @@ class HomePageTest:
 class NewListTest:
 
 	def test_can_save_a_POST_request(self, client):
-		response = client.post('/lists/new', data={'item_text': 'A new list item'})
+		response = client.post('/lists/new', data={'text': 'A new list item'})
 
 		assert Item.objects.count() == 1
 		new_item = Item.objects.first()
 		assert new_item.text == 'A new list item'
 
 	def test_redirects_after_POST(self, client):
-		response = client.post('/lists/new', data={'item_text': 'A new list item'})
+		response = client.post('/lists/new', data={'text': 'A new list item'})
 		new_list = List.objects.first()
 		assertRedirects(response, f'/lists/{new_list.id}/')
 
 	def test_validation_errors_are_sent_back_to_home_page_template(self, client):
-		response = client.post('/lists/new', data={'item_text': ''})
+		response = client.post('/lists/new', data={'text': ''})
 		assert response.status_code == 200
 		assertTemplateUsed(response, 'home.html')
 		expected_error = escape("You can't have an empty list item")
 		assertContains(response, expected_error)
 
 	def test_invalid_list_items_arent_saved(self, client):
-		client.post('/lists/new', data={'item_text': ''})
+		client.post('/lists/new', data={'text': ''})
 		assert List.objects.count() == 0
 		assert Item.objects.count() == 0
 
@@ -77,7 +77,7 @@ class ListViewTest:
 		
 		client.post(
 			f'/lists/{correct_list.id}/',
-			data = {'item_text': 'A new item for an existing list'}
+			data = {'text': 'A new item for an existing list'}
 		)
 
 		assert Item.objects.count() == 1
@@ -91,7 +91,7 @@ class ListViewTest:
 
 		response = client.post(
 			f'/lists/{correct_list.id}/',
-			data = {'item_text': 'A new item for an existing list'}
+			data = {'text': 'A new item for an existing list'}
 		)
 
 		assertRedirects(response, f'/lists/{correct_list.id}/')
@@ -100,7 +100,7 @@ class ListViewTest:
 		list_ = List.objects.create()
 		response = client.post(
 			f'/lists/{list_.id}/',
-			data = {'item_text': ''}
+			data = {'text': ''}
 		)
 		assert response.status_code == 200 
 		assertTemplateUsed(response, 'list.html')
