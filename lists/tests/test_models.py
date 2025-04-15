@@ -38,3 +38,7 @@ class ListAndItemModelTest:
 		with pytest.raises(ValidationError):
 			item.save()
 			item.full_clean()
+
+	def test_get_absolute_url(self):
+		list_ = List.objects.create()
+		assert list_.get_absolute_url() == f'/lists/{list_.id}/'
