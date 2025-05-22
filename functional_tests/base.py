@@ -27,11 +27,11 @@ class FunctionalTest: # base functional test class that will be inherited by oth
 					raise e
 				time.sleep(0.5)
 
-	def wait_for(self, fn):
+	def wait_for(self, fn, *args):
 		start_time = time.time()
 		while True:
 			try:
-				return fn()
+				return fn(*args)
 			except (AssertionError, WebDriverException) as e:
 				if time.time() - start_time > MAX_WAIT:
 					raise e
