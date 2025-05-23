@@ -41,4 +41,6 @@ Assume we have a user account at /home/username
         |- db.sqlite3
         |- etc
 
+## Automated deployment with ansible
 
+$ ansible-playbook -i inventory.ini provision.ansible.yaml --limit=aws --extra-vars "host=<URL>"

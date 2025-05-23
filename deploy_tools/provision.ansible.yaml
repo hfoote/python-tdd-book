@@ -86,9 +86,6 @@
         regexp="^DJANGO_SECRET_KEY"
         line="DJANGO_SECRET_KEY={{keygen.stdout}}"
 
-    # - name: Set environment variables from .env file
-    #   setup: source /home/{{ ansible_ssh_user }}/sites/{{ host }}/.env
-
     - name: Collect static files
       ansible.builtin.command: virtualenv/bin/python3.11 manage.py collectstatic --noinput
       args:
