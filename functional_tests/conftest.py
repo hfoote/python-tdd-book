@@ -15,8 +15,8 @@ def get_browser():
 # or a pytest-django live_server url
 @pytest.fixture
 def get_home_url(live_server):
-	staging_server = os.environ.get('STAGING_SERVER')
-	if staging_server:
-		yield 'http://' + staging_server
+	test_server = os.environ.get('TEST_SERVER')
+	if test_server:
+		yield 'http://' + test_server
 	else:
 		yield live_server.url
