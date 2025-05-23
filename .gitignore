@@ -6,4 +6,6 @@ __pycache__
 /static
 pi_server*
 .env
-.coveragesrc/db.sqlite3
+.coverage
+src/db.sqlite3
+src/static
