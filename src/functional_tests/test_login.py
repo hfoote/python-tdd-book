@@ -18,9 +18,9 @@ class LoginTest(FunctionalTest):
 		)
 
 		# A message appears telling them the email has been sent
-		def check_for_email():
-			assert "Check your email" in self.browser.find_element(By.CSS_SELECTOR, "body").text
-		self.wait_for(check_for_email)
+		def check_for_text_in_body(text):
+			assert text in self.browser.find_element(By.TAG_NAME, 'body').text
+		self.wait_for(check_for_text_in_body, "Check your email")
 
 		# They check their email and find a message
 		email = mail.outbox.pop()
