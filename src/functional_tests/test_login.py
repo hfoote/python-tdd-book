@@ -40,7 +40,7 @@ class LoginTest(FunctionalTest):
 
 		# they are logged in
 		def check_logged_in():
-			return self.browser.find_element(By.CSS_SELECTOR, "#id_logout")
+			return self.browser.find_element(By.LINK_TEXT, "Log out")
 		self.wait_for(check_logged_in)
 
 		navbar = self.browser.find_element(By.CSS_SELECTOR, ".navbar")
