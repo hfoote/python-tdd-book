@@ -39,3 +39,19 @@ class FunctionalTest: # base functional test class that will be inherited by oth
 
 	def get_item_input_box(self):
 		return self.browser.find_element(By.ID, 'id_text')
+
+	def wait_to_be_logged_in(self, email):
+		def check_logged_in():
+			return self.browser.find_element(By.CSS_SELECTOR, "#id_logout")
+		self.wait_for(check_logged_in)
+
+		navbar = self.browser.find_element(By.CSS_SELECTOR, ".navbar")
+		assert email in navbar.text
+
+	def wait_to_be_logged_out(self, email):
+		def check_logged_out():
+			return self.browser.find_element(By.CSS_SELECTOR, "input[name=email]")
+		self.wait_for(check_logged_out)
+
+		navbar = self.browser.find_element(By.CSS_SELECTOR, ".navbar")
+		assert email not in navbar.text

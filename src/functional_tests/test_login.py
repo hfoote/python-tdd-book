@@ -39,21 +39,11 @@ class LoginTest(FunctionalTest):
 		self.browser.get(url)
 
 		# they are logged in
-		def check_logged_in():
-			return self.browser.find_element(By.CSS_SELECTOR, "#id_logout")
-		self.wait_for(check_logged_in)
-
-		navbar = self.browser.find_element(By.CSS_SELECTOR, ".navbar")
-		assert TEST_EMAIL in navbar.text
+		self.wait_to_be_logged_in(email=TEST_EMAIL)
 
 		# now they log out
 		self.browser.find_element(By.CSS_SELECTOR, "#id_logout").click()
 
 		# they are logged out
-		def check_logged_out():
-			return self.browser.find_element(By.CSS_SELECTOR, "input[name=email]")
-		self.wait_for(check_logged_out)
-
-		navbar = self.browser.find_element(By.CSS_SELECTOR, ".navbar")
-		assert TEST_EMAIL not in navbar.text
+		self.wait_to_be_logged_out(email=TEST_EMAIL)
 
